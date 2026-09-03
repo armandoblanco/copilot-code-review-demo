@@ -24,3 +24,22 @@ Al revisar un PR, prioriza: (1) vulnerabilidades de seguridad, (2) manejo de err
 ausente o silencioso, (3) fuga de datos sensibles en logs, (4) apertura innecesaria de
 superficie de red. Estilo de código y nomenclatura son de menor prioridad frente a lo
 anterior.
+
+
+<!-- github-knowledge-base-start -->
+## Knowledge Base
+
+### Purpose
+
+This repository uses the Knowledge Base at [https://github.com/armandoblanco/copilot-code-review-demo](https://github.com/armandoblanco/copilot-code-review-demo) on branch `main`.
+
+### Required behavior
+
+1. Before changing code, read `docs/index.md` from that branch.
+2. Use the index to open only the knowledge files relevant to the task.
+3. If the index is unavailable, stop and report that the Knowledge Base could not be loaded.
+
+### Source of truth
+
+Generated knowledge tracks the code. When the knowledge and code disagree, trust the code.
+<!-- github-knowledge-base-end -->
