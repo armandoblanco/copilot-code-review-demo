@@ -14,6 +14,11 @@ set -euo pipefail
 REPO="${1:?Uso: setup-gate-ligero.sh <owner>/<repo> [rama-default]}"
 BRANCH="${2:-}"
 
+if [[ -n "$BRANCH" && ! "$BRANCH" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+  echo "La rama contiene caracteres no válidos: $BRANCH" >&2
+  exit 1
+fi
+
 if [ -n "$BRANCH" ]; then
   REF_INCLUDE="refs/heads/$BRANCH"
 else
@@ -25,7 +30,7 @@ echo "Creando ruleset 'Gate Ligero - Copilot Review' en $REPO (rama: ${BRANCH:-<
 # Nota: gh api con -F/-f no compone bien arrays de objetos anidados
 # (rules[] con distintas claves por elemento), así que construimos el
 # payload como JSON y lo pasamos con --input.
-PAYLOAD_FILE="$(mktemp -t gate-ligero-ruleset)"
+PAYLOAD_FILE="$(mktemp "${TMPDIR:-/tmp}/setup-gate-ligero.XXXXXX")"
 trap 'rm -f "$PAYLOAD_FILE"' EXIT
 
 cat > "$PAYLOAD_FILE" << JSON
