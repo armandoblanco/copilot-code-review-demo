@@ -12,9 +12,15 @@
 set -euo pipefail
 
 REPO="${1:?Uso: setup-gate-ligero.sh <owner>/<repo> [rama-default]}"
-BRANCH="${2:-main}"
+BRANCH="${2:-}"
 
-echo "Creando ruleset 'Gate Ligero - Copilot Review' en $REPO (rama: $BRANCH)..."
+if [ -n "$BRANCH" ]; then
+  REF_INCLUDE="refs/heads/$BRANCH"
+else
+  REF_INCLUDE="~DEFAULT_BRANCH"
+fi
+
+echo "Creando ruleset 'Gate Ligero - Copilot Review' en $REPO (rama: ${BRANCH:-<rama default del repo>})..."
 
 # Nota: gh api con -F/-f no compone bien arrays de objetos anidados
 # (rules[] con distintas claves por elemento), así que construimos el
@@ -29,7 +35,7 @@ cat > "$PAYLOAD_FILE" << JSON
   "enforcement": "active",
   "conditions": {
     "ref_name": {
-      "include": ["~DEFAULT_BRANCH"],
+      "include": ["$REF_INCLUDE"],
       "exclude": []
     }
   },
