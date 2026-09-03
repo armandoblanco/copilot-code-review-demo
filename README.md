@@ -14,8 +14,10 @@ copilot-code-review-demo/
 │   └── instructions/
 │       ├── backend-python.instructions.md   # applyTo: services/**/*.py
 │       ├── frontend-typescript.instructions.md  # applyTo: **/*.ts,**/*.tsx
-│       └── infra-terraform.instructions.md  # applyTo: infra/**/*.tf
+│       ├── infra-terraform.instructions.md  # applyTo: infra/**/*.tf
+│       └── dotnet-csharp.instructions.md    # applyTo: **/*.cs
 ├── services/payments/app.py                 # baseline seguro (Python)
+├── services/orders/                          # capa .NET (ASP.NET Core minimal API)
 ├── frontend/src/Login.tsx                   # baseline seguro (TS/React)
 ├── infra/main.tf                             # baseline seguro (Terraform)
 └── scripts/setup-gate-ligero.sh              # crea el ruleset real vía gh api
@@ -30,6 +32,7 @@ real en paralelo:
 | `feature/payments-charge-endpoint` | PR #1 | SQL injection, log de tarjeta/CVV, sin validación de input, `float` para dinero |
 | `feature/login-form` | PR #2 | `dangerouslySetInnerHTML` sin sanitizar, contraseña logueada y en `localStorage`, fetch sin manejo de error |
 | `feature/infra-customer-uploads` | PR #3 | bucket S3 público sin cifrado, security group abierto a `0.0.0.0/0`, password hardcodeada |
+| `feature/dotnet-orders-service` | PR #6 | connection string hardcodeada, sync-over-async (`.Result`/`.Wait()`), SQL injection, `catch` genérico que traga excepciones, `double` para dinero |
 
 Cada PR debería disparar automáticamente la revisión de Copilot y quedar bloqueado para
 merge hasta resolver los comentarios (gate real, no sugerencia).
@@ -63,11 +66,11 @@ Esto crea un ruleset activo sobre la rama por defecto con:
 
 ## Paso 3 — Ver la revisión en acción
 
-Abre cualquiera de los 3 PRs ya publicados:
+Abre cualquiera de los PRs publicados (ver tabla arriba):
 
 ```bash
 gh pr list --repo armandoblanco/copilot-code-review-demo
-gh pr view 1 --repo armandoblanco/copilot-code-review-demo --web
+gh pr view 6 --repo armandoblanco/copilot-code-review-demo --web
 ```
 
 Si el ruleset del Paso 2 ya estaba activo **antes** de abrir un PR (o si vuelves a
@@ -81,6 +84,12 @@ gh pr comment 1 --repo armandoblanco/copilot-code-review-demo --body "@copilot r
 Intenta hacer merge: GitHub debe **bloquear el botón de merge** con el mensaje
 "Merging is blocked" hasta resolver los hilos.
 
+**Resultado verificado en PR #6 (.NET):** Copilot detectó los 5 problemas
+intencionales (sync-over-async en 2 endpoints, conexiones ADO.NET sin `using`, SQL por
+interpolación en 2 queries, `catch` genérico que traga la excepción, `double` para
+dinero) y dejó comentarios de código específicos por línea. `mergeStateStatus` quedó en
+`BLOCKED`.
+
 ## Qué debería señalar Copilot en cada archivo (para verificar que el gate "ve" el path correcto)
 
 | Archivo | Instrucción `applyTo` que debería activarse | Problema intencional |
@@ -88,6 +97,7 @@ Intenta hacer merge: GitHub debe **bloquear el botón de merge** con el mensaje
 | `services/payments/app.py` | `backend-python.instructions.md` | falta validación de input, SQL armado con f-string, log de dato sensible |
 | `frontend/src/Login.tsx` | `frontend-typescript.instructions.md` | `dangerouslySetInnerHTML`, contraseña en `console.log`, sin manejo de error |
 | `infra/main.tf` | `infra-terraform.instructions.md` | bucket S3 público, security group abierto a `0.0.0.0/0` |
+| `services/orders/*.cs` | `dotnet-csharp.instructions.md` | sync-over-async, SQL injection, `catch` genérico, connection string hardcodeada, `double` para dinero |
 
 ## La conversación de gobierno (esto es lo que realmente importa)
 
