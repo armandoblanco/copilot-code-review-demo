@@ -14,8 +14,10 @@ copilot-code-review-demo/
 │   └── instructions/
 │       ├── backend-python.instructions.md   # applyTo: services/**/*.py
 │       ├── frontend-typescript.instructions.md  # applyTo: **/*.ts,**/*.tsx
-│       └── infra-terraform.instructions.md  # applyTo: infra/**/*.tf
+│       ├── infra-terraform.instructions.md  # applyTo: infra/**/*.tf
+│       └── dotnet-csharp.instructions.md    # applyTo: **/*.cs
 ├── services/payments/app.py                 # baseline seguro (Python)
+├── services/orders/                          # capa .NET (ASP.NET Core minimal API)
 ├── frontend/src/Login.tsx                   # baseline seguro (TS/React)
 ├── infra/main.tf                             # baseline seguro (Terraform)
 └── scripts/setup-gate-ligero.sh              # crea el ruleset real vía gh api
@@ -30,6 +32,7 @@ real en paralelo:
 | `feature/payments-charge-endpoint` | PR #1 | SQL injection, log de tarjeta/CVV, sin validación de input, `float` para dinero |
 | `feature/login-form` | PR #2 | `dangerouslySetInnerHTML` sin sanitizar, contraseña logueada y en `localStorage`, fetch sin manejo de error |
 | `feature/infra-customer-uploads` | PR #3 | bucket S3 público sin cifrado, security group abierto a `0.0.0.0/0`, password hardcodeada |
+| `feature/dotnet-orders-service` | PR #6 | connection string hardcodeada, sync-over-async (`.Result`/`.Wait()`), SQL injection, `catch` genérico que traga excepciones, `double` para dinero |
 
 Cada PR debería disparar automáticamente la revisión de Copilot y quedar bloqueado para
 merge hasta resolver los comentarios (gate real, no sugerencia).
@@ -88,6 +91,7 @@ Intenta hacer merge: GitHub debe **bloquear el botón de merge** con el mensaje
 | `services/payments/app.py` | `backend-python.instructions.md` | falta validación de input, SQL armado con f-string, log de dato sensible |
 | `frontend/src/Login.tsx` | `frontend-typescript.instructions.md` | `dangerouslySetInnerHTML`, contraseña en `console.log`, sin manejo de error |
 | `infra/main.tf` | `infra-terraform.instructions.md` | bucket S3 público, security group abierto a `0.0.0.0/0` |
+| `services/orders/*.cs` | `dotnet-csharp.instructions.md` | sync-over-async, SQL injection, `catch` genérico, connection string hardcodeada, `double` para dinero |
 
 ## La conversación de gobierno (esto es lo que realmente importa)
 
