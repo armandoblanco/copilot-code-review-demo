@@ -19,8 +19,6 @@ if ! git check-ref-format --branch "$BRANCH" >/dev/null 2>&1; then
   exit 1
 fi
 
-BRANCH_JSON="$(jq -Rn --arg branch "$BRANCH" '$branch')"
-
 echo "Creando ruleset 'Gate Ligero - Copilot Review' en $REPO (rama: $BRANCH)..."
 
 # Nota: gh api con -F/-f no compone bien arrays de objetos anidados
@@ -29,39 +27,37 @@ echo "Creando ruleset 'Gate Ligero - Copilot Review' en $REPO (rama: $BRANCH)...
 PAYLOAD_FILE="$(mktemp)"
 trap 'rm -f "$PAYLOAD_FILE"' EXIT
 
-cat > "$PAYLOAD_FILE" << JSON
-{
-  "name": "Gate Ligero - Copilot Review",
-  "target": "branch",
-  "enforcement": "active",
-  "conditions": {
-    "ref_name": {
-      "include": [$BRANCH_JSON],
-      "exclude": []
+jq -n --arg branch "$BRANCH" '{
+  name: "Gate Ligero - Copilot Review",
+  target: "branch",
+  enforcement: "active",
+  conditions: {
+    ref_name: {
+      include: [$branch],
+      exclude: []
     }
   },
-  "rules": [
+  rules: [
     {
-      "type": "pull_request",
-      "parameters": {
-        "required_approving_review_count": 1,
-        "dismiss_stale_reviews_on_push": true,
-        "require_code_owner_review": false,
-        "require_last_push_approval": false,
-        "required_review_thread_resolution": true,
-        "allowed_merge_methods": ["squash", "merge"]
+      type: "pull_request",
+      parameters: {
+        required_approving_review_count: 1,
+        dismiss_stale_reviews_on_push: true,
+        require_code_owner_review: false,
+        require_last_push_approval: false,
+        required_review_thread_resolution: true,
+        allowed_merge_methods: ["squash", "merge"]
       }
     },
     {
-      "type": "copilot_code_review",
-      "parameters": {
-        "review_on_push": true,
-        "review_draft_pull_requests": false
+      type: "copilot_code_review",
+      parameters: {
+        review_on_push: true,
+        review_draft_pull_requests: false
       }
     }
   ]
-}
-JSON
+}' > "$PAYLOAD_FILE"
 
 gh api \
   --method POST \
