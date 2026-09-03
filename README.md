@@ -66,11 +66,11 @@ Esto crea un ruleset activo sobre la rama por defecto con:
 
 ## Paso 3 — Ver la revisión en acción
 
-Abre cualquiera de los 3 PRs ya publicados:
+Abre cualquiera de los PRs publicados (ver tabla arriba):
 
 ```bash
 gh pr list --repo armandoblanco/copilot-code-review-demo
-gh pr view 1 --repo armandoblanco/copilot-code-review-demo --web
+gh pr view 6 --repo armandoblanco/copilot-code-review-demo --web
 ```
 
 Si el ruleset del Paso 2 ya estaba activo **antes** de abrir un PR (o si vuelves a
@@ -83,6 +83,12 @@ gh pr comment 1 --repo armandoblanco/copilot-code-review-demo --body "@copilot r
 
 Intenta hacer merge: GitHub debe **bloquear el botón de merge** con el mensaje
 "Merging is blocked" hasta resolver los hilos.
+
+**Resultado verificado en PR #6 (.NET):** Copilot detectó los 5 problemas
+intencionales (sync-over-async en 2 endpoints, conexiones ADO.NET sin `using`, SQL por
+interpolación en 2 queries, `catch` genérico que traga la excepción, `double` para
+dinero) y dejó comentarios de código específicos por línea. `mergeStateStatus` quedó en
+`BLOCKED`.
 
 ## Qué debería señalar Copilot en cada archivo (para verificar que el gate "ve" el path correcto)
 
