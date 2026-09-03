@@ -5,6 +5,27 @@ y **nadie puede mergear** mientras queden comentarios sin resolver
 (`required_review_thread_resolution`). No depende de que la gente "se acuerde" de pedir
 la revisión ni de que decida hacerle caso — el merge queda técnicamente bloqueado.
 
+## Estado actual (verificado en vivo)
+
+- Repo público: **https://github.com/armandoblanco/copilot-code-review-demo**
+- Ruleset **"Gate Ligero - Copilot Review"** activo (ver
+  `https://github.com/armandoblanco/copilot-code-review-demo/settings/rules`).
+- 4 PRs abiertos, cada uno ya revisado automáticamente por Copilot:
+
+  | PR | Rama | Resultado de Copilot |
+  |---|---|---|
+  | [#1](https://github.com/armandoblanco/copilot-code-review-demo/pull/1) | `feature/payments-charge-endpoint` | 🟡 Changes recommended — SQL injection, log de datos sensibles/PII, `float` para dinero, llamada externa sin manejo de errores |
+  | [#2](https://github.com/armandoblanco/copilot-code-review-demo/pull/2) | `feature/login-form` | 🟡 Changes recommended — XSS y manejo inseguro de credenciales |
+  | [#3](https://github.com/armandoblanco/copilot-code-review-demo/pull/3) | `feature/infra-customer-uploads` | 🟡 Changes recommended — bucket público sin cifrado, security group abierto a Internet, credenciales hardcodeadas |
+  | [#4](https://github.com/armandoblanco/copilot-code-review-demo/pull/4) | `fix/ruleset-script-json-payload` | Copilot encontró 2 bugs reales en el propio script del demo (`mktemp` no portable, parámetro de rama ignorado) — ya corregidos en commits posteriores del mismo PR |
+
+- Verificado con la API: los PRs #1–#3 tienen `mergeStateStatus: BLOCKED` — el botón de
+  merge está deshabilitado en GitHub hasta resolver los hilos de conversación de Copilot.
+  Esto es la prueba de que es un **gate real**, no una sugerencia decorativa.
+- Un `git push` directo a `main` fue rechazado por el ruleset
+  (`GH013: Changes must be made through a pull request`), confirmando que ni siquiera el
+  dueño del repo puede saltarse el flujo de PR.
+
 ## Qué incluye
 
 ```
