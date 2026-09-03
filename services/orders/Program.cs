@@ -14,10 +14,19 @@ app.MapGet("/orders/{id:int}", async (int id, CancellationToken cancellationToke
 app.MapPost("/orders/{id:int}/refund", async (
     int id,
     decimal amount,
-    CancellationToken cancellationToken) =>
+    CancellationToken cancellationToken,
+    ILogger<Program> logger) =>
 {
-    await repository.RefundOrderAsync(id, amount, cancellationToken);
-    return Results.Ok();
+    try
+    {
+        await repository.RefundOrderAsync(id, amount, cancellationToken);
+        return Results.Ok();
+    }
+    catch (Exception exception)
+    {
+        logger.LogError(exception, "Error al reembolsar el pedido {OrderId}", id);
+        return Results.Problem("No se pudo procesar el reembolso.");
+    }
 });
 
 app.Run();
