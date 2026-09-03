@@ -19,7 +19,7 @@ echo "Creando ruleset 'Gate Ligero - Copilot Review' en $REPO (rama: $BRANCH)...
 # Nota: gh api con -F/-f no compone bien arrays de objetos anidados
 # (rules[] con distintas claves por elemento), así que construimos el
 # payload como JSON y lo pasamos con --input.
-PAYLOAD_FILE="$(mktemp)"
+PAYLOAD_FILE="$(mktemp -t gate-ligero-ruleset)"
 trap 'rm -f "$PAYLOAD_FILE"' EXIT
 
 cat > "$PAYLOAD_FILE" << JSON
