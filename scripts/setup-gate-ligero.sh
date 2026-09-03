@@ -14,9 +14,7 @@ set -euo pipefail
 REPO="${1:?Uso: setup-gate-ligero.sh <owner>/<repo> [rama-default]}"
 BRANCH="${2:-}"
 
-if [[ -n "$BRANCH" ]] && {
-  [[ ! "$BRANCH" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]] || [[ "$BRANCH" == *..* ]];
-}; then
+if [[ -n "$BRANCH" && ( ! "$BRANCH" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ || "$BRANCH" == *..* ) ]]; then
   echo "La rama contiene caracteres no válidos: $BRANCH" >&2
   exit 1
 fi
