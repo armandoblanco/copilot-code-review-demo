@@ -19,6 +19,8 @@ if ! git check-ref-format --branch "$BRANCH" >/dev/null 2>&1; then
   exit 1
 fi
 
+BRANCH_JSON="$(jq -Rn --arg branch "$BRANCH" '$branch')"
+
 echo "Creando ruleset 'Gate Ligero - Copilot Review' en $REPO (rama: $BRANCH)..."
 
 # Nota: gh api con -F/-f no compone bien arrays de objetos anidados
@@ -34,7 +36,7 @@ cat > "$PAYLOAD_FILE" << JSON
   "enforcement": "active",
   "conditions": {
     "ref_name": {
-      "include": ["$BRANCH"],
+      "include": [$BRANCH_JSON],
       "exclude": []
     }
   },
