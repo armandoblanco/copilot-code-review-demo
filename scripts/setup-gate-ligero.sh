@@ -29,7 +29,7 @@ cat > "$PAYLOAD_FILE" << JSON
   "enforcement": "active",
   "conditions": {
     "ref_name": {
-      "include": ["~DEFAULT_BRANCH"],
+      "include": ["$BRANCH"],
       "exclude": []
     }
   },
