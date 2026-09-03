@@ -14,6 +14,11 @@ set -euo pipefail
 REPO="${1:?Uso: setup-gate-ligero.sh <owner>/<repo> [rama-default]}"
 BRANCH="${2:-main}"
 
+if ! git check-ref-format --branch "$BRANCH" >/dev/null 2>&1; then
+  echo "Rama inválida: $BRANCH" >&2
+  exit 1
+fi
+
 echo "Creando ruleset 'Gate Ligero - Copilot Review' en $REPO (rama: $BRANCH)..."
 
 # Nota: gh api con -F/-f no compone bien arrays de objetos anidados
